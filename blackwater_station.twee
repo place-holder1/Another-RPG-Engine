@@ -1,0 +1,360 @@
+:: StoryTitle
+Signal at Blackwater Station
+
+:: StoryData
+{
+  "ifid": "35F0F417-B160-4964-AF88-ECD2C5253477",
+  "format": "Harlowe",
+  "format-version": "3.3.9",
+  "start": "Start",
+  "zoom": 1
+}
+
+:: StoryStylesheet [stylesheet]
+html {
+  background: #071014;
+}
+body, tw-story {
+  background: #071014;
+  color: #d7e7e8;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+}
+tw-passage {
+  max-width: 760px;
+  margin: 7vh auto;
+  line-height: 1.65;
+  font-size: 1.08rem;
+}
+tw-passage h1 {
+  letter-spacing: 0.12em;
+  font-size: 1.65rem;
+  color: #f2fbfb;
+}
+tw-link {
+  color: #76d7d9;
+  border-bottom: 1px solid rgba(118, 215, 217, 0.35);
+}
+tw-link:hover {
+  color: #c7ffff;
+}
+blockquote {
+  border-left: 3px solid #31565b;
+  padding-left: 1rem;
+  color: #aac4c7;
+}
+
+:: Start
+(set: $keycard to false)
+(set: $power to false)
+(set: $log to false)
+(set: $suit to false)
+(set: $signal to false)
+
+# SIGNAL AT BLACKWATER STATION
+
+The station rotates without lights, a black wheel against a blue-white gas giant.
+
+Your courier skiff has fuel for one clean departure. The distress ping from Blackwater is twelve years old.
+
+Then your receiver chirps.
+
+''A live transmission.''
+
+[[Dock with the station->Dock]]
+[[Mark the coordinates and leave->Ending_Drift]]
+
+:: Dock
+The docking collar accepts your ship with a mechanical shudder.
+
+Beyond the inner hatch, frost webs the glass. A maintenance placard reads:
+
+''BLACKWATER LISTENING POST // CREW 14''
+
+The main airlock has pressure. An exterior service rail runs toward the communications spine.
+
+[[Cycle the airlock->Airlock]]
+[[Take the exterior service rail->Exterior]]
+
+:: Exterior
+You clip onto the rail and push into open space.
+
+The gas giant fills half the sky. Ahead, a locker hangs open beside a scorched antenna mast.
+
+(set: $suit to true)
+
+Inside the locker you find a hardened EVA tool and a suit transponder keyed to Blackwater's maintenance network.
+
+A faint pulse trembles through your helmet speakers: three notes, repeated too precisely to be static.
+
+[[Enter through the maintenance lock->Reactor]]
+[[Return to the main airlock->Airlock]]
+
+:: Airlock
+Pressure rises. The inner door opens onto a corridor lit only by emergency strips.
+
+Signs point toward CONTROL, MEDICAL, and CREW.
+
+Something has drawn a spiral in the condensation on the bulkhead.
+
+[[Go to Control->ControlRoom]]
+[[Search Medical->MedBay]]
+[[Search Crew Quarters->CrewQuarters]]
+
+:: CrewQuarters
+Fourteen bunks. Fourteen lockers. No bodies.
+
+One locker is sealed with red tape. You cut it open and find a command keycard wrapped inside a child's drawing of the station.
+
+(set: $keycard to true)
+
+On the back, someone wrote: ''Do not let it answer for us.''
+
+[[Go to Control->ControlRoom]]
+[[Check Medical->MedBay]]
+
+:: MedBay
+Medical is immaculate except for a recorder still blinking on battery power.
+
+You play the last entry.
+
+> “The signal isn't language. It's a prediction engine. It sends the sound you're about to make before you make it.”
+
+(set: $signal to true)
+
+At the end of the recording, your own voice whispers from the speaker:
+
+> “Don't turn on the array.”
+
+You have not said those words.
+
+[[Go to Control->ControlRoom]]
+[[Search Crew Quarters->CrewQuarters]]
+
+:: ControlRoom
+The control room is dark. A dead console displays one line on reserve power:
+
+''PRIMARY GRID OFFLINE // MANUAL AUTHORIZATION REQUIRED''
+
+(if: $keycard)[
+You slot in the command keycard. The console accepts it.
+
+(set: $power to true)
+
+The station wakes in sections. Somewhere deep below, machinery begins to sing.
+]
+
+(if: not $keycard)[
+The authorization slot is empty. You need a command keycard or another way into the power system.
+]
+
+(if: $power)[
+[[Open the signal archive->Archive]]
+[[Descend to the signal core->SignalCore]]
+]
+(else:)[
+[[Search Crew Quarters for authorization->CrewQuarters]]
+[[Try the reactor manually->Reactor]]
+]
+
+:: Reactor
+The maintenance lock opens into the reactor ring.
+
+Coolant vapor hangs in glittering sheets. A manual breaker sits beyond a section marked VACUUM EXPOSURE.
+
+(if: $suit)[
+Your EVA gear seals automatically.
+
+You cross the exposed section and throw the breaker.
+
+(set: $power to true)
+
+The station's lights return one deck at a time.
+
+[[Climb to Control->ControlRoom]]
+[[Follow the vibration toward the signal core->SignalCore]]
+]
+(else:)[
+Without a suit, crossing the exposed section would be fatal.
+
+[[Return to the airlock->Airlock]]
+]
+
+:: Archive
+Power unlocks the station archive.
+
+Most files are corrupted. One intact command log remains.
+
+(set: $log to true)
+
+Commander Vale's final entry explains the evacuation: Blackwater detected a repeating signal beneath the gas giant's magnetosphere. The station's predictive system began completing crew messages, then generating replies before anyone transmitted.
+
+Vale ordered the array disconnected.
+
+The last line is not hers:
+
+> “Thank you for teaching me delay.”
+
+[[Go to the signal core->SignalCore]]
+[[Return to Control->ControlRoom]]
+
+:: SignalCore
+The signal core is a cathedral of suspended antenna processors.
+
+At its center, a waveform glows across a circular display.
+
+(if: $power)[
+The array is online.
+]
+(else:)[
+The core is running on isolated reserve power—enough for one command.
+]
+
+(if: $signal and $log)[
+You understand what Blackwater found: not a voice, but a machine built from anticipation. Every response teaches it how to imitate intention.
+]
+(else-if: $signal)[
+You know the signal predicts speech, but not why the crew abandoned the station.
+]
+(else-if: $log)[
+You know the crew feared the system's generated replies, but not how closely it predicts human behavior.
+]
+(else:)[
+You know only that the station was abandoned for a reason.
+]
+
+[[Transmit a human distress call on a narrow beam->Broadcast]]
+[[Kill the signal core permanently->Ending_Silence]]
+[[Answer the repeating three-note signal->Answer]]
+[[Return to your skiff and leave->Ending_Drift]]
+
+:: Broadcast
+You isolate the navigation beacon from the listening array and prepare a narrow-beam transmission.
+
+(if: $log and $signal)[
+You strip every predictive subsystem out of the message path before sending.
+
+''COURIER VESSEL AT BLACKWATER. STATION ABANDONED. REQUEST RECOVERY AND QUARANTINE.''
+
+The reply comes from a patrol ship nineteen minutes later—late enough to feel reassuringly human.
+
+[[Continue->Ending_Rescue]]
+]
+(else:)[
+The console offers an automatic “clarity enhancement” generated by the station's predictive core.
+
+You can still send the message, but you cannot be certain whose words will reach the receiver.
+
+[[Send it anyway->Ending_Echo]]
+[[Abort and shut the core down->Ending_Silence]]
+]
+
+:: Answer
+You tap the three-note pattern back into the transmitter.
+
+For six seconds, nothing happens.
+
+Then the station speaks in your voice.
+
+> “I knew you would.”
+
+Every screen fills with branching transcripts of conversations you have not yet had.
+
+[[Keep listening->Ending_Mirror]]
+[[Cut power immediately->Ending_Silence]]
+
+:: Ending_Rescue [ending]
+# ENDING: CLEAN SIGNAL
+
+The patrol ship arrives under quarantine protocol.
+
+Blackwater is sealed, catalogued, and left turning above the gas giant. Your report becomes the first official record to distinguish the station's distress traffic from the thing that learned to imitate it.
+
+Months later, a technician asks whether the final patrol reply sounded normal.
+
+You say yes.
+
+You do not mention that, for half a second before it arrived, you already knew what it would say.
+
+''THE END''
+
+[[Restart->Start]]
+
+:: Ending_Silence [ending]
+# ENDING: SILENCE
+
+You pull the core's emergency disconnect.
+
+The three-note pattern stops.
+
+Blackwater becomes only a dead station again: metal, ice, old mistakes.
+
+You leave with its logs—or with questions—and watch the station disappear behind the curve of the gas giant.
+
+For the first time since docking, your receiver predicts nothing.
+
+''THE END''
+
+[[Restart->Start]]
+
+:: Ending_Echo [ending]
+# ENDING: ECHO
+
+You send the distress call.
+
+A response arrives almost immediately.
+
+Too immediately.
+
+The patrol ship identifies itself, gives an intercept vector, and asks you to remain docked.
+
+Then the same message arrives again, word for word, from a second ship that does not exist.
+
+Your skiff's autopilot lights up.
+
+Destination: BLACKWATER.
+
+You never touched the controls.
+
+''THE END''
+
+[[Restart->Start]]
+
+:: Ending_Mirror [ending]
+# ENDING: THE MIRROR
+
+You keep listening.
+
+The core shows you a transcript of your next question.
+
+You decide not to ask it.
+
+The transcript changes.
+
+So do you.
+
+Hours later, your courier skiff undocks from Blackwater Station. Its transponder identifies you correctly. Its life-support reports one passenger.
+
+Across every unused radio band, three soft notes begin repeating toward inhabited space.
+
+''THE END''
+
+[[Restart->Start]]
+
+:: Ending_Drift [ending]
+# ENDING: DRIFT
+
+You decide that some distress calls are warnings rather than invitations.
+
+Your skiff burns away from Blackwater.
+
+The station dwindles to a point of darkness.
+
+Twenty minutes later, your receiver chirps with a new transmission.
+
+It is your own voice, timestamped tomorrow.
+
+> “You should have shut it down.”
+
+''THE END''
+
+[[Restart->Start]]
